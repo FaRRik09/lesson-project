@@ -1,0 +1,39 @@
+{
+  "products": [
+    {
+      "id": "5285",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3fB0SMvtwBuHBv-ZpX3Tm8xp_yBrbLHZpxA&s",
+      "description": "Tiger",
+      "first_price": "1000000000",
+      "second_price": "5000000"
+    },
+    {
+      "id": "b73d",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3fB0SMvtwBuHBv-ZpX3Tm8xp_yBrbLHZpxA&s",
+      "description": "111111111",
+      "first_price": "2222222222",
+      "second_price": "33333333333"
+    },
+    {
+      "id": "6369",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3fB0SMvtwBuHBv-ZpX3Tm8xp_yBrbLHZpxA&s",
+      "description": "123",
+      "first_price": "123",
+      "second_price": "123"
+    },
+    {
+      "id": "4f46",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3fB0SMvtwBuHBv-ZpX3Tm8xp_yBrbLHZpxA&s",
+      "description": "Tiger",
+      "first_price": "1000000000",
+      "second_price": "33333333333"
+    },
+    {
+      "id": "4635",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3fB0SMvtwBuHBv-ZpX3Tm8xp_yBrbLHZpxA&s",
+      "description": "Ратата",
+      "first_price": "4321",
+      "second_price": "1234"
+    }
+  ]
+}
