@@ -3,7 +3,7 @@
 
 const API = 'http://localhost:8000/products';
 
-let productList = document.getElementById('products');
+let productsList = document.getElementById('products');
 let image = document.getElementById('image');
 let description = document.getElementById('description');
 let firstPrice = document.getElementById('pirce-1');
@@ -22,15 +22,47 @@ let inpFirstPrice = document.getElementById('add-price-1');
 let inpSecondPrice = document.getElementById('add-price-2');
 let addProductBtn = document.getElementById('add-btn');
 
+// ? На кнопку навесили события, чтобы открыть модалку
+
 openAddFormBtn.addEventListener('click', () => {
     addModal.style.display = 'flex';
 });
+
+// ? Закрытие модалки при клике на крестик внурти неё
 
 closeAddForm.addEventListener('click', () => {
     addModal.style.display = 'none';
 });
 
+// ? Начало Details
+let closeDetailsBtn = document.getElementById('close-details');
+let detailsParent = document.getElementById('details');
+let detailsInner = document.getElementById('details-inner');
+
+closeDetailsBtn.addEventListener('click', () => {
+    detailsParent.style.display = "none";
+});
+
+// ! for edit
+
+let editModal = document.getElementById('edit-modal');
+let editModalInner = document.getElementById('edit-modal-inner');
+let closeEditModal = document.getElementById('close-edit-modal')
+let inpImageEdit = document.getElementById('edit-img');
+let inpDescriptionEdit = document.getElementById('edit-description');
+let inpFirstPriceEdit = document.getElementById('edit-price-1');
+let inpSecondPriceEdit = document.getElementById('edit-price-2');
+let editProductBtn = document.getElementById('edit-btn');
+
+closeEditModal.addEventListener('click', () => {
+    editModal.style.display = 'none';
+});
+
+// ? При клике на кнопку внутри модалки, собираем данные с инпута в объект и делаем запрос на добавление продукта, после скрываем модалку
+
 addProductBtn.addEventListener('click', async () => {
+
+    // ? Собираем данные
     let product = {
         image: inpImage.value,
         description: inpDescription.value,
@@ -38,21 +70,30 @@ addProductBtn.addEventListener('click', async () => {
         second_price: inpSecondPrice.value,
     };
 
-    await fetch(API, {
-        method: "POST",
-        body: JSON.stringify(product),
-        headers: {
-            "Content-type": "application/json; charset=utf-8",
-        },
-    });
+    // ? Отправляем данные
+    if (inpImage.value.trim() && inpDescription.value.trim() &&
+        inpFirstPrice.value.trim() && inpSecondPrice.value.trim()) {
+        await fetch(API, {
+            method: "POST",
+            body: JSON.stringify(product),
+            headers: {
+                "Content-type": "application/json; charset=utf-8",
+            },
+        });
+    } else {
+        alert('Заполните поля!');
+    }
+
+    // ? Закрываем модалку
     addModal.style.display = 'none';
 });
 
+// ? Создали асинхронную функцию для того чтобы достать данные с бэкэнда и затем отобразить
 async function showProducts() {
+    // ? Достаем данные
     let products = await fetch(API).then((res) => res.json());
 
-    productList.innerHTML = "";
-
+    // ? Перебираем массив для того чтобы создать div для карточки и поместить его в productList т.е. в родителя карточек
     products.forEach((product, id) => {
         let div = document.createElement('div');
         div.classList.add('card');
@@ -66,8 +107,80 @@ async function showProducts() {
         </div>
         `;
 
-        productList.append(div);
+        // ! details
+        div.addEventListener('click', () => {
+            detailsInner.innerHTML = '';
+            detailsParent.style.display = "flex";
+
+            detailsInner.innerHTML = `
+            <img src="${product.image}"/>
+            <div class="details-text" id="details-text">
+                <p>${product.description}</p>
+                <div class="card-price">
+                    <p>${product.first_price}сом</p>
+                    <p>${product.second_price}сом</p>
+                </div>
+            </div>
+            `;
+
+            let detailsText = document.getElementById('details-text');
+            let btnDelete = document.createElement('button');
+            btnDelete.innerHTML = "Удалить продукт";
+            btnDelete.addEventListener('click', (e) => deleteProduct(product.id, e));
+
+            //! Создаем кнопку для редактирования внутри details
+            let editBtn = document.createElement('button');
+            editBtn.innerHTML = 'Редактировать продукт';
+            detailsText.append(btnDelete, editBtn);
+            editBtn.addEventListener('click', () => {
+                editModal.style.display = 'flex';
+                editModal.style.zIndex = '2';
+                editProduct(product);
+            });
+
+        });
+
+
+        // ! edit
+
+
+        productsList.append(div);
     });
 }
 
+// ? Вызываем эту функцию одиг раз, в глобальной области видимости, для того чтобы при загрузке страницы сразу подгрузились данные
 showProducts();
+
+async function deleteProduct(id, event) {
+    event.stopPropagation()
+    await fetch(`${API}/${id}`, {
+        method: 'DELETE',
+        headers: {
+            "Content-type": "application/json; charset=utf-8",
+        },
+    });
+    detailsParent.style.display = "none";
+}
+
+async function editProduct(product) {
+    inpImage.value = product.image;
+    inpDescriptionEdit.value = product.description;
+    inpFirstPriceEdit.value = product.first_price;
+    inpSecondPriceEdit.value = product.second_price;
+
+    editProductBtn.addEventListener('click', async () => {
+        let newProduct = {
+            image: inpImageEdit.value,
+            description: inpDescriptionEdit.value,
+            first_price: inpFirstPriceEdit.value,
+            second_price: inpSecondPriceEdit.value,
+        };
+        await fetch(`${API}/${product.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(newProduct),
+            headers: {
+                "Content-type": "application/json; charset=utf-8",
+            },
+        });
+    });
+}
